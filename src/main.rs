@@ -178,7 +178,9 @@ unsafe fn l1_x86_avx2(im1: &RgbImage, im2: &RgbImage) -> i32 {
 
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "sse2")]
-unsafe fn l1_x86_sse2(im1: &RgbImage, im2: &RgbImage) -> i32 {
+// use "pub" permits to use the function in the module of test 
+// use "unsafe" garantees memory safety 
+pub unsafe fn l1_x86_sse2(im1: &RgbImage, im2: &RgbImage) -> i32 {
     // Only works if data is 16 bytes-aligned, which should be the case.
     // In case of crash due to unaligned data, swap _mm_load_si128 for _mm_loadu_si128.
     use std::arch::x86_64::{
@@ -241,7 +243,7 @@ pub fn l1_generic(im1: &RgbImage, im2: &RgbImage) -> i32 {
 
 #[cfg(target_arch = "aarch64")]
 #[target_feature(enable = "neon")]
-unsafe fn l1_neon(im1: &RgbImage, im2: &RgbImage) -> i32 {
+pub unsafe fn l1_neon(im1: &RgbImage, im2: &RgbImage) -> i32 {
     use std::arch::aarch64::uint8x16_t;
     use std::arch::aarch64::vabdq_u8; // Absolute subtract
     use std::arch::aarch64::vaddlvq_u8; // horizontal add
@@ -445,21 +447,45 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    // Allow to use every function in this module of test
+    // Allow to use every function created before in this module of test
     use super::*;
+    // Allow to use the open function
     use image::open;
 
     #[test]
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     fn unit_test_x86() {
-        // TODO
-        assert!(true);
+    // test the l1_x86_sse2 function
+    // block unsafe is to allow the use of the unsafe function unit_test_x86
+        unsafe{
+
+            let ima1 = open("assets/tiles-small/tile-1.png").unwrap().to_rgb8(); 
+            let ima2 = open("assets/tiles-small/tile-2.png").unwrap().to_rgb8(); 
+
+            let result = l1_x86_sse2(&ima1, &ima2);
+            let expected_result = 2154;
+
+            println!("Result of the function l1_x86_sse2 {}",result);
+            assert_eq!(result, expected_result, "Expected to be {}, but got {}", expected_result, result);
+        }
     }
 
     #[test]
     #[cfg(target_arch = "aarch64")]
     fn unit_test_aarch64() {
-        assert!(true);
+    // test the l1_neon function
+    // block unsafe is to allow the use of the unsafe function unit_test_x86 
+        unsafe{
+        
+            let ima1 = open("assets/tiles-small/tile-1.png").unwrap().to_rgb8(); 
+            let ima2 = open("assets/tiles-small/tile-2.png").unwrap().to_rgb8(); 
+
+            let result = l1_neon(&ima1, &ima2);
+            let expected_result = 2154;
+
+            println!("Result of the function l1_neon {}",result);
+            assert_eq!(result, expected_result, "Expected to be {}, but got {}", expected_result, result);
+        }
     }
 
     #[test]
