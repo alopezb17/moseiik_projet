@@ -524,8 +524,43 @@ mod tests {
     }
     #[test]
     fn unit_test_prepare_target() {
+        let image_path= "assets/target-small.png";
+        let scale=2;
+        let tile_size=Size{width:10,height:10};
 
+        // Call the function
+        let result= prepare_target(image_path, scale, &tile_size);
 
-        assert!(true); 
+        //Verification the function target
+        assert!(result.is_ok(), "The function has an error : {:?}", result);
+
+        let target_image = result.unwrap();
+
+        //The width and height expected because scale * tile_size
+        let expected_width = scale*tile_size.width;
+        let expected_height = scale*tile_size.height;
+
+        println!("Restult width: {}",target_image.width());
+        println!("Restult height: {}",target_image.height());
+
+        println!("Expected width has to be {}, and got {}", expected_width, target_image.width());
+        println!("Expected height has to be {}, and got {}", expected_height, target_image.height());
+
+        // Tests
+        assert_eq!(
+            target_image.width(),
+            expected_width,
+            "Expected width has to be {}, and got {}",
+            expected_width,
+            target_image.width()
+        );
+        assert_eq!(
+            target_image.height(),
+            expected_height,
+            "Expected height has to be {}, and got {}",
+            expected_height,
+            target_image.height()
+        );
     }
+
 }
