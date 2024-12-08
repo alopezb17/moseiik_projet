@@ -442,6 +442,9 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    // Allow to use every function in this module of test
+    use super::*;
+
     #[test]
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     fn unit_test_x86() {
@@ -459,5 +462,26 @@ mod tests {
     fn unit_test_generic() {
         // TODO
         assert!(true);
+    }
+
+    #[test]
+    fn unit_test_prepare_tiles() {
+        let images_folder = "assets/tiles-small";
+        let tile_size: Size = Size { width: (20), height: (20) };
+        // Get more information about the error of the function
+        let verbose: bool = true;
+
+        // Call the function - Unrawp allows to retrieve the ok() return of the function prepare_tile()
+        let result_tiles = prepare_tiles(images_folder, &tile_size, verbose).unwrap();
+        let mut i=1;
+        // Test the tiles size
+        for tile in result_tiles {
+            println!("Testing tile {}", i); 
+            i=1+i;
+            let w = tile.width();
+            let h = tile.height();
+            assert_eq!(w, tile_size.width, "Expected width to be {}, but got {}", tile_size.width, w);
+            assert_eq!(h, tile_size.height, "Expected height to be {}, but got {}", tile_size.height, h); 
+        }
     }
 }
