@@ -230,10 +230,13 @@ unsafe fn l1_x86_sse2(im1: &RgbImage, im2: &RgbImage) -> i32 {
     return result;
 }
 
-fn l1_generic(im1: &RgbImage, im2: &RgbImage) -> i32 {
+pub fn l1_generic(im1: &RgbImage, im2: &RgbImage) -> i32 {
     im1.iter()
         .zip(im2.iter())
         .fold(0, |res, (a, b)| res + i32::abs((*a as i32) - (*b as i32)))
+
+        //println!("Result of distance between two images with l1_generic{}",res);
+
 }
 
 #[cfg(target_arch = "aarch64")]
@@ -444,6 +447,7 @@ fn main() {
 mod tests {
     // Allow to use every function in this module of test
     use super::*;
+    use image::open;
 
     #[test]
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
@@ -460,8 +464,16 @@ mod tests {
 
     #[test]
     fn unit_test_generic() {
-        // TODO
-        assert!(true);
+    //Unit test for L1 generic function   
+
+        let ima1 = open("assets/tiles-small/tile-1.png").unwrap().to_rgb8();  // Change to RGB
+        let ima2 = open("assets/tiles-small/tile-2.png").unwrap().to_rgb8(); 
+
+        let result = l1_generic(&ima1, &ima2);
+        let expected_result = 2154;
+
+        println!("Result of the function L1 generic {}",result);
+        assert_eq!(result, expected_result, "Expected to be {}, but got {}", expected_result, result);
     }
 
     #[test]
@@ -483,5 +495,11 @@ mod tests {
             assert_eq!(w, tile_size.width, "Expected width to be {}, but got {}", tile_size.width, w);
             assert_eq!(h, tile_size.height, "Expected height to be {}, but got {}", tile_size.height, h); 
         }
+    }
+    #[test]
+    fn unit_test_prepare_target() {
+
+
+        assert!(true); 
     }
 }
