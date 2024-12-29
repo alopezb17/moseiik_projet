@@ -1,6 +1,5 @@
 /target
 rustfmt.toml
-assets/images
 
 assets/moseiik_test_images
 out.png

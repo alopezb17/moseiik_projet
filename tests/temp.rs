@@ -15,7 +15,7 @@ mod tests {
 
         let image_path = "assets/kit.jpeg";     // path of the reference image 
         let output_path = "assets/out_x86.png"; // path of the output image
-        let tiles_path = "assets/moseiik_test_images/images";
+        let tiles_path = "assets/moseiik_test_images/images/";
 
         let opt = Options{
             image: image_path.to_owned(),
@@ -51,7 +51,7 @@ mod tests {
 
         let image_path = "assets/kit.jpeg"; // path of the reference image
         let output_path = "assets/out_aarch64.png"; // path of the output image
-        let tiles_path = "assets/moseiik_test_images/images";
+        let tiles_path = "assets/moseiik_test_images/images/";
 
         let opt = Options{
             image: image_path.to_owned(),

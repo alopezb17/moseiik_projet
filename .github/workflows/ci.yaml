@@ -45,7 +45,7 @@ jobs:
 
       # 3 - Build the Docker image
       - name: Build Docker image
-        run: docker build --platform $TARGET_PLATFORM -t $DOCKER_IMAGE_NAME .
+        run: docker build --platform $TARGET_PLATFORM --tag $DOCKER_IMAGE_NAME .
 
       # 4 - Run the Docker image
       - name: Run project tests

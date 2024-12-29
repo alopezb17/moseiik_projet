@@ -15,16 +15,23 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Set the RUST_BACKTRACE environment variable
 ENV RUST_BACKTRACE=1
 
-#Copy the files that we are going to use to our project 
+#Copy source code and configuration files
 COPY ./src /app/src
 COPY Cargo.toml /app
-COPY ./assets /app/assets
 COPY ./tests/temp.rs /app/tests/temp.rs
+COPY ./assets /app/assets
 
-#Download the datasets 
-RUN wget https://nasext-vaader.insa-rennes.fr/ietr-vaader/moseiik_test_images.zip -P tests/
-RUN mkdir tests/moseiik_test_images
-RUN unzip tests/moseiik_test_images.zip -d tests/moseiik_test_images/
+# Define the dataset path and url
+ENV DATASET_DIR=assets/moseiik_test_images
+ENV DATASET_URL=https://nasext-vaader.insa-rennes.fr/ietr-vaader/moseiik_test_images.zip
 
+#Download the datasets if they are not already downloaded
+#It enables executing the tests in local and remote environments
+RUN if [ ! -d ${DATASET_DIR} ]; then \
+    mkdir ${DATASET_DIR} && \
+    wget ${DATASET_URL} -P assets/ && \
+    unzip assets/moseiik_test_images.zip -d ${DATASET_DIR}; \
+  fi
 
+# Set the entry point to run the tests
 ENTRYPOINT [ "cargo", "test", "--release", "--" ]
