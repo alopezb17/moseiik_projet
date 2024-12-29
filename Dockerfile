@@ -12,6 +12,9 @@ RUN apt-get install wget -y
 RUN apt-get install unzip -y
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Set the RUST_BACKTRACE environment variable
+ENV RUST_BACKTRACE=1
+
 #Copy the files that we are going to use to our project 
 COPY ./src /app/src
 COPY Cargo.toml /app
