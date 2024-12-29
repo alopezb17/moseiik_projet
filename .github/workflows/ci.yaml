@@ -1,0 +1,52 @@
+# Workflow name
+name: Moseiik CI
+
+# Authors: DEGRYCK P., LOPEZ A.
+
+# Workflow triggers  - Pushes and pull-requests on main
+on:
+  push: 
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Workflow job configuration
+jobs:
+  test:
+    # Define the job strategy (one-dimensional matrix) - One job per target architecture
+    strategy:
+      matrix:
+        architecture: [linux/amd64, linux/arm64]
+    
+    # Define the name of the job
+    name: Test on '${{ matrix.architecture }}' architecture
+
+    # Host machine executing the job
+    runs-on: ubuntu-latest
+    
+    # Declare environment variables for this job
+    env:
+      TARGET_PLATFORM: ${{ matrix.architecture }}
+      DOCKER_IMAGE_NAME: moseeik_image
+
+    # Define the steps of the CI
+    steps:
+      # 1 - Get the source code
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      # 2 - Get QEMU for multi-architecture support (mandatory for ARM) 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+
+      # 3 - Build the Docker image
+      - name: Build Docker image
+        run: docker build --platform $TARGET_PLATFORM -t $DOCKER_IMAGE_NAME .
+
+      # 4 - Run the Docker image
+      - name: Run project tests
+        run: docker run --rm --platform $TARGET_PLATFORM $DOCKER_IMAGE_NAME
